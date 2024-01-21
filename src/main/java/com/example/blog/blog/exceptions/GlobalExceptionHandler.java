@@ -28,6 +28,13 @@ public class GlobalExceptionHandler {
         response.setStatus(false);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ApiResponse> handlePostNotFoundException(PostNotFoundException ex){
+        ApiResponse response=new ApiResponse();
+        response.setMessage(ex.getMessage());
+        response.setStatus(false);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String,String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
         Map<String,String>map=new HashMap<>();

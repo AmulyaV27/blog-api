@@ -7,14 +7,48 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
     @Autowired
     private PostService postService;
     @PostMapping("/user/{userId}/category/{categoryId}/save")
-    public ResponseEntity<PostDTO> createPost(@PathVariable Long userId, @PathVariable Long categoryId, @RequestBody PostDTO postDTO){
+    public ResponseEntity<PostDTO> createPost(@PathVariable("userId") Long userId, @PathVariable("categoryId") Long categoryId, @RequestBody PostDTO postDTO){
         PostDTO post = this.postService.createPost(postDTO,userId,categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<PostDTO>> getAllPosts(){
+        return ResponseEntity.ok(this.postService.getAllPosts());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDTO> getPostById(@PathVariable("id") Long id){
+        return ResponseEntity.ok(this.postService.getPostById(id));
+    }
+    @PutMapping("/update")
+    public ResponseEntity<PostDTO> updatePost(@RequestBody PostDTO postDTO){
+        return ResponseEntity.ok(this.postService.updatePost(postDTO));
+
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> deletePost(@PathVariable("id") Long id){
+        return ResponseEntity.ok(this.postService.deletePost(id));
+    }
+    @GetMapping("/category/{id}")
+    public ResponseEntity<List<PostDTO>>getByCategory(@PathVariable("id") Long categoryId){
+        return ResponseEntity.ok(this.postService.getPostByCategory(categoryId));
+
+    }
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<PostDTO>>getByUser(@PathVariable("id") Long userId){
+        return ResponseEntity.ok(this.postService.getPostByUser(userId));
+
+    }
+    @GetMapping("/search/{title}")
+    public ResponseEntity<List<PostDTO>>searchPost(@PathVariable("title") String title){
+        return ResponseEntity.ok(this.postService.searchPost(title));
+
     }
 }

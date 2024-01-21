@@ -4,7 +4,9 @@ import com.example.blog.blog.entities.Category;
 import com.example.blog.blog.entities.Post;
 import com.example.blog.blog.entities.User;
 import com.example.blog.blog.exceptions.CategoryNotFoundException;
+import com.example.blog.blog.exceptions.PostNotFoundException;
 import com.example.blog.blog.exceptions.UserNotFoundException;
+import com.example.blog.blog.payloads.CategoryDTO;
 import com.example.blog.blog.payloads.PostDTO;
 import com.example.blog.blog.repositories.CategoryRepository;
 import com.example.blog.blog.repositories.PostRepository;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PostServiceImpl implements PostService {
     @Autowired
@@ -38,37 +42,46 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getPostById(long id) {
-        return null;
+    public PostDTO getPostById(Long id) {
+        Post post = this.postRepository.findById(id).orElseThrow(()-> new PostNotFoundException(id));
+        return this.modelMapper.map(post,PostDTO.class);
     }
 
     @Override
-    public List<Post> getAllPosts() {
-        return null;
+    public List<PostDTO> getAllPosts() {
+        return this.postRepository.findAll().stream().map(c -> this.modelMapper.map(c, PostDTO.class)).toList();
     }
 
     @Override
-    public Post updatePost(PostDTO postDTO) {
-        return null;
+    public PostDTO updatePost(PostDTO postDTO) {
+        Post post = this.postRepository.findById(postDTO.getId()).orElseThrow(()-> new PostNotFoundException(postDTO.getId()));
+        post.setImageName(postDTO.getImageName());
+        post.setContent(postDTO.getContent());
+        post.setTitle(postDTO.getTitle());
+        return this.modelMapper.map(this.postRepository.save(post),PostDTO.class);
     }
 
     @Override
-    public boolean deletePost(long id) {
-        return false;
+    public boolean deletePost(Long id) {
+        Post post = this.postRepository.findById(id).orElseThrow(()-> new PostNotFoundException(id));
+        this.postRepository.delete(post);
+        return true;
     }
 
     @Override
-    public List<Post> getPostByUser(User user) {
-        return null;
+    public List<PostDTO> getPostByUser(Long userId) {
+        return this.postRepository.findByUserId(userId).stream().map(e->this.modelMapper.map(e,PostDTO.class)).collect(Collectors.toList());
     }
 
     @Override
-    public List<Post> getPostByCategory(Category category) {
-        return null;
+    public List<PostDTO> getPostByCategory(Long categoryId) {
+        return this.postRepository.findByCategoryId(categoryId).stream().map(e->this.modelMapper.map(e, PostDTO.class)).collect(Collectors.toList());
+
     }
 
     @Override
-    public List<Post> searchPost(String title) {
-        return null;
+    public List<PostDTO> searchPost(String title) {
+        return this.postRepository.findByTitleContainingIgnoreCase(title).stream().map(e->this.modelMapper.map(e,PostDTO.class)).collect(Collectors.toList());
+
     }
 }

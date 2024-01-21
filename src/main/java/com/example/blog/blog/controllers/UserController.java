@@ -20,7 +20,7 @@ public class UserController {
     public ResponseEntity<UserDTO> saveUser(@Valid @RequestBody UserDTO userDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.createUser(userDTO));
     }
-    @GetMapping("/allUsers")
+    @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         return ResponseEntity.ok(this.userService.getAllUsers());
     }

@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface PostService {
     PostDTO createPost(PostDTO postDTO, long userId, long categoryId);
-    Post getPostById(long id);
-    List<Post> getAllPosts();
-    Post updatePost(PostDTO postDTO);
-    boolean deletePost(long id);
-    List<Post> getPostByUser(User user);
-    List<Post> getPostByCategory(Category category);
-    List<Post> searchPost(String title);
+    PostDTO getPostById(Long id);
+    List<PostDTO> getAllPosts();
+    PostDTO updatePost(PostDTO postDTO);
+    boolean deletePost(Long id);
+    List<PostDTO> getPostByUser(Long userId);
+    List<PostDTO> getPostByCategory(Long categoryId);
+    List<PostDTO> searchPost(String title);
 }
