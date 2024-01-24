@@ -2,6 +2,7 @@ package com.example.blog.blog.services.impl;
 
 import com.example.blog.blog.entities.Category;
 import com.example.blog.blog.entities.Post;
+import com.example.blog.blog.entities.PostResponse;
 import com.example.blog.blog.entities.User;
 import com.example.blog.blog.exceptions.CategoryNotFoundException;
 import com.example.blog.blog.exceptions.PostNotFoundException;
@@ -14,6 +15,10 @@ import com.example.blog.blog.repositories.UserRepository;
 import com.example.blog.blog.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,8 +53,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDTO> getAllPosts() {
-        return this.postRepository.findAll().stream().map(c -> this.modelMapper.map(c, PostDTO.class)).toList();
+    public PostResponse getAllPosts(Integer pageSize,Integer pageNumber,String sortBy,String sortDir) {
+        Sort sort = (sortDir.equalsIgnoreCase("asc"))?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+        Pageable pg = PageRequest.of(pageNumber,pageSize,sort);
+        Page<Post> posts=this.postRepository.findAll(pg);
+        List<PostDTO> postsDTO = posts.getContent().stream().map(p->this.modelMapper.map(p,PostDTO.class)).collect(Collectors.toList());
+        PostResponse postResponse=new PostResponse();
+        postResponse.setPosts(postsDTO);
+        postResponse.setLastPage(posts.isLast());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setPageNumber(posts.getNumber());
+        return postResponse;
     }
 
     @Override
